@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>スポットクーラー かんたんメンテ手順</title>
+<style>
+:root{--navy:#2b4a6f;--blue:#1f6fd1;--bg:#f2f6fb;--ok:#1a9a52;--ng:#d33;--warn:#b86e00}
+*{box-sizing:border-box}
+
+body{margin:0;font-family:"Yu Gothic UI","Meiryo",sans-serif;font-size:18px;background:var(--bg);color:#1b2733;line-height:1.5}
+header{background:var(--navy);color:#fff;padding:10px 16px 0;position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0 0 8px}
+nav{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:760px;margin:0 auto}
+nav button{border:0;border-radius:10px 10px 0 0;background:#3d6190;color:#cfe0f5;font:inherit;font-size:13px;font-weight:700;padding:6px 2px;cursor:pointer}
+nav button span{display:block;font-size:22px;line-height:1.2}
+nav button.on{background:var(--bg);color:var(--navy)}
+main{max-width:760px;margin:0 auto;padding:14px 16px 60px}
+.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:14px}
+h2{font-size:24px;margin:0 0 8px;color:var(--navy)}
+.num{display:inline-block;background:var(--blue);color:#fff;border-radius:50%;width:38px;height:38px;line-height:38px;text-align:center;margin-right:8px;font-size:22px}
+.scene{background:#e9f3fc;border-radius:12px;margin:10px 0;overflow:hidden}
+.scene svg{display:block;width:100%;height:auto}
+.desc{font-size:20px;font-weight:700;margin:8px 0}
+.warn{background:#fff4d6;border-left:6px solid #f0a500;padding:8px 12px;border-radius:6px;margin:8px 0;font-weight:700;color:#7a4b00}
+.bar{height:10px;background:#d6e2f0;border-radius:5px;overflow:hidden;margin-bottom:8px}
+.bar i{display:block;height:100%;background:var(--ok);transition:width .3s}
+.prog{font-size:14px;color:#566;font-weight:700}
+.nav{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-top:12px}
+button.big{font:inherit;font-size:22px;font-weight:800;border:0;border-radius:14px;padding:16px 8px;cursor:pointer;color:#fff;background:var(--blue);width:100%}
+button.sub{background:#dfe8f3;color:var(--navy)}
+button.ok{background:var(--ok)} button.ng{background:var(--ng)}
+button.big:active{transform:scale(.97)}
+ol.list{padding-left:0;list-style:none;margin:8px 0}
+ol.list li{padding:8px 4px;border-bottom:1px dashed #cdd8e5;font-size:18px}
+ol.list li b{display:inline-block;width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;background:var(--blue);color:#fff;margin-right:8px}
+.menu button{margin-bottom:10px;text-align:left;padding:16px;font-size:22px}
+.q{font-size:26px;font-weight:800;margin:10px 0}
+.yn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.res{text-align:center}
+.res .ico{font-size:64px}
+.res h2{font-size:26px}
+.tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:14px;font-weight:700;color:#fff;background:var(--warn)}
+input{font:inherit;padding:10px;border:2px solid #9fb2c6;border-radius:10px;width:100%;margin:6px 0}
+table{border-collapse:collapse;width:100%;font-size:16px}
+td{border-bottom:1px solid #ddd;padding:6px}
+details{margin:10px 0;font-size:16px} summary{font-weight:700;cursor:pointer;font-size:18px}
+.log div{border-bottom:1px solid #ddd;padding:8px 0;font-size:16px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:12px 20px;border-radius:24px;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+#toast.show{opacity:.95}
+.cards2 .card{padding:12px} .cards2 b{font-size:20px;color:var(--navy)}
+
+/* ---- animations ---- */
+.anim-out{animation:slideOut 3.2s ease-in-out infinite}
+.anim-in{animation:slideIn 3.2s ease-in-out infinite}
+.tank-out{animation:tankOut 4s ease-in-out infinite}
+.water{animation:drain 4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.pour{animation:pour 4s linear infinite;opacity:0}
+.pulse{animation:pulse 1.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.drop{animation:fall 1s linear infinite;opacity:0}
+.dirtfade{animation:dirtfade 3s ease-in-out infinite}
+.rise{animation:rise 2.4s ease-in infinite;opacity:0}
+.flow{stroke-dasharray:8 8;animation:dash 1s linear infinite}
+.wipe{animation:wipe 2.4s ease-in-out infinite}
+.knob{animation:knob 3s ease-in-out infinite}
+.pop{animation:pop 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.cover{animation:cover 3.4s ease-in-out infinite}
+.boxaway{animation:boxaway 3.4s ease-in-out infinite}
+.wobble{animation:wobble 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes slideOut{0%,15%{transform:translateX(0)}45%,75%{transform:translateX(105px)}100%{transform:translateX(0)}}
+@keyframes slideIn{0%,10%{transform:translateX(105px)}40%,85%{transform:translateX(0)}100%{transform:translateX(0)}}
+@keyframes tankOut{0%,10%{transform:translateX(0)}30%,70%{transform:translateX(100px)}90%,100%{transform:translateX(0)}}
+@keyframes drain{0%,30%{transform:scaleY(1)}60%,100%{transform:scaleY(0)}}
+@keyframes pour{0%,28%{opacity:0;transform:translateY(0)}35%{opacity:1}60%{opacity:1;transform:translateY(34px)}64%,100%{opacity:0}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+@keyframes fall{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(46px);opacity:0}}
+@keyframes dirtfade{0%,10%{opacity:.85}80%,100%{opacity:0}}
+@keyframes rise{0%{transform:translateY(0);opacity:0}30%{opacity:.8}100%{transform:translateY(-26px);opacity:0}}
+@keyframes dash{to{stroke-dashoffset:-16}}
+@keyframes wipe{0%,100%{transform:translate(0,0)}50%{transform:translate(70px,10px)}}
+@keyframes knob{0%,20%{transform:translateX(0)}50%,90%{transform:translateX(44px)}100%{transform:translateX(0)}}
+@keyframes pop{0%,30%{transform:scale(0)}50%{transform:scale(1.35)}62%,100%{transform:scale(1)}}
+@keyframes cover{0%,10%{transform:translateY(-70px);opacity:0}50%,90%{transform:translateY(0);opacity:1}100%{transform:translateY(0);opacity:0}}
+@keyframes boxaway{0%,15%{transform:translateX(0)}50%,90%{transform:translateX(-95px)}100%{transform:translateX(0)}}
+@keyframes wobble{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+</style></head>
+<body>
+<!-- 共通パーツ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<g id="body">
+ <circle cx="132" cy="170" r="8" fill="#333"/><circle cx="188" cy="170" r="8" fill="#333"/>
+ <rect x="112" y="22" width="96" height="138" rx="10" fill="#eef3f9" stroke="#2b4a6f" stroke-width="3"/>
+ <rect x="124" y="8" width="72" height="16" rx="4" fill="#cfe0f2" stroke="#2b4a6f" stroke-width="3"/>
+ <rect x="122" y="38" width="76" height="54" rx="4" fill="#9fb2c6"/>
+ <rect x="122" y="98" width="76" height="16" rx="4" fill="#fff" stroke="#2b4a6f" stroke-width="2"/>
+ <circle cx="136" cy="106" r="5" fill="#2b4a6f"/>
+ <rect x="122" y="120" width="76" height="34" rx="4" fill="#9fb2c6"/>
+</g>
+<g id="filter"><rect x="124" y="40" width="72" height="50" rx="3" fill="#fff" stroke="#2b4a6f" stroke-width="2"/>
+ <path d="M124 52H196M124 64H196M124 76H196M136 40V90M148 40V90M160 40V90M172 40V90M184 40V90" stroke="#9fb2c6" stroke-width="1.5"/></g>
+<g id="dirt" fill="#8a6a3b" opacity=".8"><circle cx="135" cy="50" r="9"/><circle cx="160" cy="62" r="12"/><circle cx="183" cy="49" r="8"/><circle cx="150" cy="80" r="10"/><circle cx="177" cy="78" r="9"/><circle cx="130" cy="72" r="6"/></g>
+<g id="tank"><rect x="124" y="122" width="72" height="30" rx="4" fill="#e9f6ff" stroke="#2b4a6f" stroke-width="2"/><rect x="146" y="126" width="28" height="5" rx="2" fill="#2b4a6f"/></g>
+</defs></svg>
+
+<header><h1>🧊 スポットクーラー かんたんメンテ手順</h1>
+<nav id="nav"></nav></header>
+<main id="app"></main>
+<p style="max-width:760px;margin:0 auto;padding:0 16px 40px;font-size:15px;color:#345;font-weight:700">※機種によって多少ちがう場合があります。この手順書は一般的な内容です。わからないとき・何かあったときは、工場長に連絡してください。</p>
+<div id="toast"></div>
+
+<script>
+const NAVY='#2b4a6f';
+const T=(x,y,s,sz=16,fill=NAVY)=>`<text x="${x}" y="${y}" font-size="${sz}" fill="${fill}" font-weight="700" text-anchor="middle">${s}</text>`;
+const svg=inner=>`<svg viewBox="0 -20 320 220" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+const BODY='<use href="#body"/>';
+const outlet=`<rect x="6" y="112" width="36" height="48" rx="5" fill="#fff" stroke="${NAVY}" stroke-width="3"/><rect x="34" y="127" width="6" height="4" fill="${NAVY}"/><rect x="34" y="143" width="6" height="4" fill="${NAVY}"/>`;
+const plugShape=`<rect x="38" y="127" width="6" height="4" fill="#777"/><rect x="38" y="143" width="6" height="4" fill="#777"/><rect x="44" y="122" width="22" height="30" rx="4" fill="#f5c542" stroke="${NAVY}" stroke-width="2"/>`;
+const D1='M66 137 C 80 150 96 152 112 146', D2='M94 137 C 100 175 125 175 112 146';
+const flowLines=(c)=>[136,160,184].map(x=>`<path class="flow" d="M${x} 4 Q${x+8} -6 ${x} -16" fill="none" stroke="${c}" stroke-width="4" stroke-linecap="round"/>`).join('');
+const drops=(xs,y)=>xs.map((x,i)=>`<ellipse class="drop" style="animation-delay:${i*.3}s" cx="${x}" cy="${y}" rx="4" ry="6" fill="#5bb6f5"/>`).join('');
+const bigFilter=(cx,cy,sc,extra='')=>`<g transform="translate(${cx} ${cy}) scale(${sc}) translate(-160 -65)"><use href="#filter"/>${extra}</g>`;
+
+const SC={
+ plugCheck:()=>svg(`${BODY}${outlet}${plugShape}<path d="${D1}" fill="none" stroke="#333" stroke-width="5" stroke-linecap="round"/>
+  <text font-size="40" x="60" y="128"><animateTransform attributeName="transform" type="translate" values="0 0;50 14;0 0" dur="3s" repeatCount="indefinite"/>🔍</text>
+  ${T(250,60,'折れ・ひび・',18,'#d33')}${T(250,84,'こげ・断線',18,'#d33')}${T(250,108,'ないか見る',18,'#d33')}`),
+ unplug:()=>svg(`${BODY}${outlet}
+  <path fill="none" stroke="#333" stroke-width="5" stroke-linecap="round" d="${D1}"><animate attributeName="d" dur="3s" repeatCount="indefinite" keyTimes="0;.25;.6;.8;1" values="${D1};${D1};${D2};${D2};${D1}"/></path>
+  <g><animateTransform attributeName="transform" type="translate" dur="3s" repeatCount="indefinite" keyTimes="0;.25;.6;.8;1" values="0 0;0 0;28 0;28 0;0 0"/>${plugShape}</g>
+  <text font-size="34" x="70" y="118"><animateTransform attributeName="transform" type="translate" dur="3s" repeatCount="indefinite" keyTimes="0;.25;.6;.8;1" values="0 0;0 0;28 0;28 0;0 0"/>✋</text>
+  ${T(250,70,'⚡ 抜く',24,'#d33')}`),
+ direct:()=>svg(`
+  <rect x="12" y="110" width="124" height="28" rx="6" fill="#ddd" stroke="#888" stroke-width="2"/>
+  ${[28,66,104].map((x,i)=>`<rect x="${x}" y="100" width="22" height="14" rx="3" fill="${['#f5c542','#7ac','#e88'][i]}" stroke="#555"/>`).join('')}
+  <text class="pulse" x="74" y="76" font-size="64" fill="#d33" text-anchor="middle" font-weight="900">✕</text>
+  ${T(74,168,'タコ足・コードリール',14,'#d33')}${T(74,186,'発電機もNG',14,'#d33')}
+  <rect x="200" y="96" width="60" height="70" rx="8" fill="#fff" stroke="${NAVY}" stroke-width="3"/>
+  <rect x="222" y="112" width="6" height="14" fill="${NAVY}"/><rect x="236" y="112" width="6" height="14" fill="${NAVY}"/>
+  <rect x="216" y="132" width="30" height="24" rx="4" fill="#f5c542" stroke="${NAVY}" stroke-width="2"/>
+  <text class="pulse" x="230" y="76" font-size="64" fill="#1a9a52" text-anchor="middle" font-weight="900">○</text>
+  ${T(230,186,'壁のコンセントから直接',14,'#1a9a52')}`),
+ clear:()=>svg(`${BODY}
+  <g class="boxaway"><rect x="64" y="96" width="62" height="56" fill="#c9985a" stroke="#7a5a2b" stroke-width="3"/><path d="M64 112H126" stroke="#7a5a2b" stroke-width="3"/></g>
+  <path class="flow" d="M150 4 Q158 -6 150 -16" fill="none" stroke="#5bb6f5" stroke-width="4"/>
+  ${T(268,60,'吸い込み口と',14,'#d33')}${T(268,80,'吹き出し口に',14,'#d33')}${T(268,100,'物を置かない',14,'#d33')}`),
+ tank:()=>svg(`${BODY}<g class="tank-out"><use href="#tank"/><rect class="water" x="126" y="136" width="68" height="14" fill="#5bb6f5"/></g>
+  <ellipse class="pour" cx="262" cy="148" rx="4" ry="7" fill="#5bb6f5"/><ellipse class="pour" style="animation-delay:.25s" cx="252" cy="150" rx="4" ry="7" fill="#5bb6f5"/>
+  <path d="M215 188H305" stroke="#8aa" stroke-width="3"/>`),
+ mode:()=>svg(`${BODY}${flowLines('#5bb6f5')}
+  <rect x="222" y="62" width="88" height="36" rx="18" fill="#cfd8e3" stroke="${NAVY}" stroke-width="2"/>
+  <circle class="knob" cx="240" cy="80" r="14" fill="#1f6fd1"/>
+  ${T(240,122,'送風',15)}${T(284,122,'冷房',15,'#1f6fd1')}
+  <text class="pulse" x="284" y="146" font-size="30" text-anchor="middle">❄️</text>
+  <text x="240" y="146" font-size="26" text-anchor="middle">💨</text>`),
+ fan:()=>svg(`${BODY}${flowLines('#9bb')}
+  <rect x="222" y="62" width="88" height="36" rx="18" fill="#cfd8e3" stroke="${NAVY}" stroke-width="2"/>
+  <circle cx="240" cy="80" r="14" fill="#1f6fd1"/>
+  ${T(240,122,'送風',15,'#1f6fd1')}${T(284,122,'冷房',15,'#999')}
+  <text class="pulse" x="240" y="146" font-size="28" text-anchor="middle">💨</text>`),
+ place:()=>svg(`
+  <g class="wobble"><g transform="translate(70 100) rotate(90) scale(.55) translate(-160 -90)"><use href="#body"/></g></g>
+  <text class="pulse" x="70" y="40" font-size="46" fill="#d33" text-anchor="middle" font-weight="900">✕</text>${T(70,186,'横にしない',16,'#d33')}
+  <g transform="translate(225 100) scale(.62) translate(-160 -90)"><use href="#body"/></g>
+  <text class="pulse" x="225" y="40" font-size="46" fill="#1a9a52" text-anchor="middle" font-weight="900">○</text>${T(225,186,'たてに置く',16,'#1a9a52')}
+  <text x="290" y="10" font-size="30" text-anchor="middle">☀️</text><path d="M262 22 L300 22 L300 52 L262 52Z" fill="none"/>${T(285,40,'日かげ・風通し',11)}`),
+ remove:()=>svg(`${BODY}<g class="anim-out"><use href="#filter"/><use href="#dirt"/></g>
+  <text x="40" y="80" font-size="40">✋</text>${T(60,110,'横にスライド',14)}`),
+ wash:()=>svg(`<rect x="130" y="-16" width="60" height="14" rx="4" fill="#9aa8b8" stroke="${NAVY}" stroke-width="2"/><path d="M150 -2h20v12h-20z" fill="#9aa8b8" stroke="${NAVY}" stroke-width="2"/>
+  ${drops([154,160,166],18)}
+  ${bigFilter(160,112,1.5)}
+  <g class="dirtfade">${bigFilter(160,112,1.5,'<use href="#dirt"/>')}</g>
+  ${T(260,70,'清水かぬるま湯',15)}${T(260,92,'で洗う',15)}`),
+ dry:()=>svg(`<polygon points="60,40 160,-10 260,40" fill="#c98a5a" stroke="#7a5a2b" stroke-width="3"/>
+  <path d="M80 40V150M240 40V150" stroke="#7a5a2b" stroke-width="4"/>
+  ${bigFilter(160,120,1.2)}
+  <path class="rise" d="M130 90q8-8 0-16" stroke="#7ac" stroke-width="3" fill="none"/><path class="rise" style="animation-delay:.8s" d="M160 90q8-8 0-16" stroke="#7ac" stroke-width="3" fill="none"/><path class="rise" style="animation-delay:1.6s" d="M190 90q8-8 0-16" stroke="#7ac" stroke-width="3" fill="none"/>
+  <path d="M60 160H260" stroke="#8aa" stroke-width="3"/>${T(160,186,'日かげでしっかり乾かす',16,'#d33')}`),
+ install:()=>svg(`${BODY}<g class="anim-in"><use href="#filter"/></g>
+  <text class="pop" x="262" y="70" font-size="60" fill="#1a9a52" text-anchor="middle" font-weight="900">✔</text>`),
+ record:()=>svg(`<rect x="90" y="10" width="140" height="150" rx="10" fill="#fff" stroke="${NAVY}" stroke-width="3"/><rect x="90" y="10" width="140" height="34" rx="10" fill="#d33"/>
+  ${T(160,34,'次回の掃除日',17,'#fff')}
+  <path d="M110 70H210M110 94H210M110 118H210M110 142H210M130 54V150M160 54V150M190 54V150" stroke="#cfd8e3" stroke-width="2"/>
+  <text class="pop" x="160" y="122" font-size="64" fill="#1a9a52" text-anchor="middle" font-weight="900">✔</text>
+  ${T(270,70,'2週間後',17)}${T(270,92,'(ほこりが多い',12)}${T(270,108,'所は1週間後)',12)}`),
+ wipe:()=>svg(`${BODY}<text class="wipe" x="100" y="70" font-size="44">🧽</text><text class="pop" x="250" y="60" font-size="40">✨</text>`),
+ cord:()=>svg(`${[0,1,2,3].map(i=>`<ellipse cx="140" cy="${100+i*6}" rx="${70-i*8}" ry="${34-i*4}" fill="none" stroke="#333" stroke-width="5"/>`).join('')}
+  <path d="M208 100 Q250 90 262 120" fill="none" stroke="#333" stroke-width="5"/>
+  <rect x="256" y="116" width="26" height="32" rx="4" fill="#f5c542" stroke="${NAVY}" stroke-width="2"/>
+  <text class="wipe" x="60" y="60" font-size="40">🧽</text>${T(160,186,'よごれを落として まとめる',16)}`),
+ cover:()=>svg(`${BODY}<rect class="cover" x="100" y="2" width="120" height="176" rx="18" fill="#7f8c99" fill-opacity=".88" stroke="#4a5560" stroke-width="3"/>
+  ${T(262,60,'ほこりよけ',15)}${T(262,80,'カバー',15)}${T(262,120,'たてに置く',15,'#1a9a52')}`)
+};
+
+/* ---- 手順データ ---- */
+const FLOWS={
+ before:{icon:'🔍',name:'使う前チェック',when:'スポットクーラーを使う前に、毎回やります。',steps:[
+  {t:'電源コードを見る',s:'plugCheck',d:'プラグとコードを目で見て確認します。',w:'折れ・ひび・こげ・断線があったら使わない!工場長に連絡。'},
+  {t:'電源は壁のコンセントから',s:'direct',d:'タコ足・コードリール・発電機からは取らず、壁のコンセントから直接とります。',w:'起動のときに大きな電気を使うので、細い線だと動かなくなります。'},
+  {t:'まわりに物がないか見る',s:'clear',d:'空気の吸い込み口と吹き出し口をふさぐ物をどかします。',w:'ふさぐと保護機能が働いて、すぐ止まります。'},
+  {t:'ドレンタンクを空にする',s:'tank',d:'タンクを外して水を捨て、奥までしっかり入れます。',w:'水が満タンだと動かない機種があります。'},
+  {t:'スイッチを「冷房 ❄」へ',s:'mode',d:'スイッチを送風から冷房に切り替えます。',w:'「送風」のままだと冷たい風は出ません。'},
+  {t:'置き場所を確認する',s:'place',d:'たてに置き、直射日光をさけて風通しのよい所に置きます。',w:'まわりが暑すぎる(目安45℃超)と冷えません。横倒しは故障のもと。'}]},
+ filter:{icon:'🧽',name:'フィルター掃除',when:'2週間に1回。ほこりの多い所は1週間に1回やります。',steps:[
+  {t:'止めて、プラグを抜く',s:'unplug',d:'運転を止めて、電源プラグをコンセントから抜きます。',w:'ぬれた手でさわらない。必ず先にプラグを抜く!'},
+  {t:'フィルターを外す',s:'remove',d:'エアフィルターを取り外します。工具はいりません。',w:''},
+  {t:'水で洗う',s:'wash',d:'清水かぬるま湯で、汚れを洗い流します。',w:''},
+  {t:'日かげで乾かす',s:'dry',d:'風通しのよい日かげで、しっかり乾かします。',w:'ぬれたまま取り付けない!'},
+  {t:'元に戻す',s:'install',d:'乾いたフィルターを、すき間なく取り付けます。',w:''},
+  {t:'日付を記録する',s:'record',d:'実施した日を記録します(最後の画面で記録できます)。',w:'汚れがこびり付くと業者に依頼することになります。こまめに!'}]},
+ after:{icon:'📦',name:'シーズン後の片付け',when:'夏が終わって、しまう前にやります。',steps:[
+  {t:'フィルターを掃除する',s:'wash',d:'「フィルター掃除」と同じ手順で洗って、乾かします。',w:'プラグを抜いてから!'},
+  {t:'本体の外側を拭く',s:'wipe',d:'本体の外装のよごれを拭き取ります。',w:'プラグを抜いてから!'},
+  {t:'タンクの水を捨てて乾かす',s:'tank',d:'ドレンタンクの水を捨てて、中を乾かします。',w:''},
+  {t:'送風運転で内部を乾かす',s:'fan',d:'スイッチを「送風」にして運転し、機械の中を乾かします。',w:'冷房のまましまうと内部がぬれたままになります。'},
+  {t:'コードを拭いてまとめる',s:'cord',d:'電源コード・延長コードのよごれを落として、まとめます。',w:'フィルターやタンクなどの部品も、なくさないように一緒に保管。'},
+  {t:'カバーをかけて、たてに保管',s:'cover',d:'ほこりよけのカバーをかけ、たてに置いて保管します。',w:'横倒しは、コンプレッサー故障の原因!'}]}
+};
+const TROUBLE=[
+ {id:'cold',icon:'🥵',name:'冷えない・冷えにくい',checks:[
+  {q:'スイッチが「送風」になっていませんか?',r:{k:'fix',title:'「冷房 ❄」に切り替える',text:'送風モードでは冷たい風は出ません。'}},
+  {q:'フィルターにほこり・ごみが付いていませんか?',r:{k:'fix',title:'フィルターを掃除する',text:'目詰まりすると冷えなくなります。',go:'filter'}},
+  {q:'電源を、タコ足・コードリール・発電機から取っていませんか?',r:{k:'fix',title:'壁のコンセントから直接とる',text:'コンプレッサーが起動できないことがあります。専用の電源の取り口を用意してください。'}},
+  {q:'まわりが暑すぎる、または吸い込み口がふさがっていませんか?',r:{k:'fix',title:'置き場所を変える',text:'日かげに移す・風通しを良くする・物をどける。使える温度の目安は25〜45℃です。'}},
+  {q:'真夏なのに、本体に霜が付いていませんか?',r:{k:'call',title:'冷媒ガスがもれている可能性',text:'自分では直せません。使用をやめて、工場長に連絡してください。'}}]},
+ {id:'stop',icon:'⏹',name:'すぐ止まる',checks:[
+  {q:'吸い込み口や冷風ダクトが、ふさがっていませんか?',r:{k:'fix',title:'物をどけて、少し待つ',text:'保護機能が働いて止まっています。物をどけ、しばらく待って冷えてから電源を入れ直します。'}},
+  {q:'フィルターにほこり・ごみが付いていませんか?',r:{k:'fix',title:'フィルターを掃除する',text:'目詰まりでも止まります。',go:'filter'}}]},
+ {id:'dead',icon:'🔌',name:'電源が入らない',checks:[
+  {q:'電源プラグが抜けていませんか?',r:{k:'fix',title:'プラグを差し込む',text:'何かの拍子に抜けていることがあります。'}},
+  {q:'プラグが変形、またはコードが断線していませんか?',r:{k:'stop',title:'使わないでください',text:'危険です。プラグを抜いて、工場長に連絡してください。'}},
+  {q:'ドレンタンクが満水、または正しく入っていませんか?',r:{k:'fix',title:'水を捨てて、入れ直す',text:'満水だと動かない機種があります。捨てたあと奥までしっかりセットします。'}}],
+  last:'ヒューズ切れの可能性があります。自分で交換しないでください(原因がほかにあると、また切れます)。'},
+ {id:'leak',icon:'💧',name:'水がもれる',checks:[
+  {q:'ドレンタンクが、ずれたり斜めに入っていませんか?',r:{k:'fix',title:'タンクをセットし直す',text:'奥まで、まっすぐ入れ直します。'}},
+  {q:'ドレンタンクが割れたり、壊れたりしていませんか?',r:{k:'call',title:'タンクの交換が必要',text:'工場長に連絡してください。部品の注文には、品番と欲しい部品名が必要です。'}},
+  {q:'ドレン口(水の出口)がつまっていませんか?',r:{k:'fix',title:'点検して、掃除する',text:'つまりを取り除きます。'}},
+  {q:'フィルターが汚れていませんか?',r:{k:'fix',title:'フィルターを掃除する',text:'汚れたままだと水もれの原因になります。',go:'filter'}}]}
+];
+const NORMAL=[
+ ['💧','水がほとんどたまらない','冷たい風が出ていればOK。水が中で蒸発している、いい状態です。'],
+ ['🌫','吹き出し口から白い霧','故障ではありません。ただし内部が汚れているサイン。業者に分解清掃を相談。'],
+ ['🔊','運転中「ジー」という音','圧縮機の音。しばらくすると消えます。心配いりません。'],
+ ['🔊','止めたあと「シュルシュル」','ガス(冷媒)の流れが止まる音。心配いりません。'],
+ ['🌬','吹き出し口からほこり','久しぶりの運転で出ます。「送風」で飛ばしましょう。ずっと出るならフィルター掃除。'],
+ ['❄','寒い時期に霜が付く','冬に除湿で使うと付きます。暖房を併用して空気をあたためます。']];
+const MAKERS=[['ダイキン','0120-881-081'],['コロナ','0120-919-302'],['スイデン','0120-285-240'],['ナカトミ','026-245-3105'],['トヨトミ','0120-104-154'],['日立アプライアンス','0120-649-020'],['ハイアール','0120-865-812'],['山善','買った販売店へ'],['デンソー','お近くのメンテナンスサービスへ'],['トラスコ','0120-509-849'],['アイリス','0800-919-0770']];
+
+/* ---- アプリ ---- */
+/* 報告フォームのURL(Microsoft Forms等)。作成したらここに貼り付けると、完了画面にボタンが出ます */
+const FORM_URL='https://docs.google.com/forms/d/e/1FAIpQLSdZQypASUTaZ157IbGdE57J_stYnaPpBeRGAEG3SGiO9vychg/viewform';
+/* Googleフォームの事前入力用の項目ID(例:entry.123456789)。名前・作業を自動入力します。不要なら空のまま */
+const FORM_ENTRY_NAME='', FORM_ENTRY_TASK='';
+/* QRコードのURL末尾 ?id=SC-03 から管理番号を自動で受け取る */
+let MACHINE_ID='';try{MACHINE_ID=(new URLSearchParams(location.search).get('id')||'').trim()}catch(e){}
+const st={tab:'before',idx:-1,tr:null,ci:0,res:null};
+const $=id=>document.getElementById(id), app=$('app');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TABS=[['before','🔍','使う前'],['filter','🧽','掃除'],['trouble','🆘','困った'],['after','📦','片付け'],['log','📝','記録']];
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+function go(tab){st.tab=tab;st.idx=-1;st.tr=null;st.ci=0;st.res=null;render();scrollTo(0,0)}
+function set(o){Object.assign(st,o);render();scrollTo(0,0)}
+function saveLog(task){const id=($('kid')||{}).value||'';const log=store.get('sc-log',[]);log.unshift({d:new Date().toLocaleString('ja-JP'),id:id.trim(),task});store.set('sc-log',log);store.set('sc-last-id',id.trim());toast('記録しました ✅')}
+
+function render(){
+ $('nav').innerHTML=TABS.map(([k,i,n])=>`<button class="${st.tab===k?'on':''}" onclick="go('${k}')"><span>${i}</span>${n}</button>`).join('');
+ const banner=MACHINE_ID?`<div class="card" style="padding:8px 16px;background:#e9f3fc"><b>📍 担当:${esc(MACHINE_ID)} さん</b></div>`:'';
+ if(FLOWS[st.tab]) app.innerHTML=banner+flowHTML(FLOWS[st.tab]);
+ else if(st.tab==='trouble') app.innerHTML=banner+troubleHTML();
+ else app.innerHTML=logHTML();
+}
+function formLink(task){let u=FORM_URL;if(FORM_ENTRY_NAME||FORM_ENTRY_TASK){const p=new URLSearchParams({usp:"pp_url"});const nm=($("kid")||{}).value||MACHINE_ID;if(FORM_ENTRY_NAME&&nm)p.set(FORM_ENTRY_NAME,nm);if(FORM_ENTRY_TASK)p.set(FORM_ENTRY_TASK,task);u+=(u.includes("?")?"&":"?")+p.toString()}return u}
+function flowHTML(f){
+ const n=f.steps.length;
+ if(st.idx<0) return `<div class="card"><h2>${f.icon} ${f.name}</h2><p class="desc">${f.when}</p>
+  <ol class="list">${f.steps.map((s,i)=>`<li><b>${i+1}</b>${s.t}</li>`).join('')}</ol>
+  <button class="big" onclick="set({idx:0})">はじめる ▶</button></div>`;
+ if(st.idx>=n) return `<div class="card res"><div class="ico">🎉</div><h2>おつかれさまでした!</h2>
+  <p>「${f.name}」が全部終わりました。</p>
+  <label>お名前</label><input id="kid" value="${esc(MACHINE_ID||store.get('sc-last-id',''))}" placeholder="例:仙波">
+  ${FORM_URL?`<div class="warn" style="text-align:left">最後に、報告フォームに「名前・作業・異常の有無」を入力して送信してください。</div>
+  <a href="${formLink(f.name)}" target="_blank" rel="noopener" onclick="saveLog('${f.name}')" style="text-decoration:none"><button class="big ok">📮 報告フォームを開く</button></a>`
+  :`<button class="big ok" onclick="saveLog('${f.name}')">📝 実施を記録する</button>`}<br><br>
+  <button class="big sub" onclick="set({idx:-1})">もう一度見る</button></div>`;
+ const s=f.steps[st.idx];
+ return `<div class="card"><div class="prog">STEP ${st.idx+1} / ${n}</div><div class="bar"><i style="width:${(st.idx+1)/n*100}%"></i></div>
+  <h2><span class="num">${st.idx+1}</span>${s.t}</h2>
+  <div class="scene">${SC[s.s]()}</div>
+  <p class="desc">${s.d}</p>${s.w?`<div class="warn">⚠ ${s.w}</div>`:''}
+  <div class="nav"><button class="big sub" onclick="set({idx:${st.idx-1}})">◀ もどる</button>
+  <button class="big ok" onclick="set({idx:${st.idx+1}})">できた ✔ つぎへ</button></div></div>`;
+}
+function troubleHTML(){
+ if(st.res==='contact') return contactHTML();
+ if(st.tr==='normal') return `<div class="card"><h2>😌 故障ではない現象</h2><p>次のものは、あわてて修理に出さなくて大丈夫です。</p></div>
+  <div class="cards2">${NORMAL.map(([i,a,b])=>`<div class="card"><b>${i} ${a}</b><br>${b}</div>`).join('')}</div>
+  <button class="big sub" onclick="set({tr:null})">◀ 最初にもどる</button>`;
+ if(!st.tr) return `<div class="card"><h2>🆘 どうしました?</h2><p class="desc">当てはまるものを選んでください。</p></div>
+  <div class="menu">${TROUBLE.map(t=>`<button class="big" onclick="set({tr:'${t.id}',ci:0,res:null})">${t.icon} ${t.name}</button>`).join('')}
+  <button class="big ok" onclick="set({tr:'normal'})">😌 これって故障?(音・霧・水が少ない など)</button></div>`;
+ const t=TROUBLE.find(x=>x.id===st.tr);
+ if(st.res){const r=st.res;const ic={fix:'🔧',call:'📞',stop:'⛔'}[r.k];
+  return `<div class="card res"><div class="ico">${ic}</div><h2>${r.title}</h2><p class="desc">${r.text}</p>
+   ${r.go?`<button class="big" onclick="go('${r.go}')">🧽 フィルター掃除の手順を見る</button><br><br>`:''}
+   ${r.k==='fix'?`<button class="big ok" onclick="toast('よかったです!');set({tr:null,res:null})">なおった ✅</button><br><br>
+   <button class="big sub" onclick="set({res:null,ci:${st.ci+1}})">まだダメ → つぎのチェック</button>`
+   :`<button class="big ng" onclick="set({res:'contact'})">📞 連絡のしかたを見る</button>`}</div>`;}
+ if(st.ci>=t.checks.length) return contactHTML(t.last);
+ const c=t.checks[st.ci];
+ return `<div class="card"><div class="prog">${t.icon} ${t.name} ― チェック ${st.ci+1} / ${t.checks.length}</div>
+  <div class="bar"><i style="width:${(st.ci+1)/t.checks.length*100}%"></i></div>
+  <div class="q">${c.q}</div>
+  <div class="yn"><button class="big ng" onclick="set({res:TROUBLE.find(x=>x.id==='${t.id}').checks[${st.ci}].r})">はい</button>
+  <button class="big ok" onclick="set({ci:${st.ci+1}})">いいえ</button></div>
+  <br><button class="big sub" onclick="set({tr:null})">◀ 最初にもどる</button></div>`;
+}
+function contactHTML(note){
+ return `<div class="card"><h2>📞 自分では直せません</h2>${note?`<div class="warn">${note}</div>`:''}
+  <ol class="list"><li><b>1</b>使うのをやめて、電源プラグを抜く</li><li><b>2</b>工場長に連絡する</li>
+  <li><b>3</b>メーカー・修理業者への連絡は、工場長の指示に従う<br>　伝えること:品番 / 症状 / 買った販売店 / 買った時期</li></ol>
+  <details><summary>メーカーの問い合わせ先</summary><table>${MAKERS.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table>
+  <small>※2018年の記事の情報です。かける前に公式サイトで最新の番号を確認してください。</small></details>
+  <button class="big sub" onclick="set({tr:null,res:null})">◀ 最初にもどる</button></div>`;
+}
+function logHTML(){
+ const log=store.get('sc-log',[]);
+ return `<div class="card"><h2>📝 実施の記録</h2><p>このパソコン(スマホ)に保存された記録です。</p>
+  <div class="log">${log.length?log.map(l=>`<div>${l.d}　<b>${l.id||'(番号なし)'}</b>　${l.task}</div>`).join(''):'<div>まだ記録がありません。</div>'}</div>
+  ${log.length?`<br><button class="big sub" onclick="if(confirm('記録をすべて消しますか?')){store.set('sc-log',[]);render()}">記録を全部消す</button>`:''}</div>`;
+}
+render();
+</script>
+</body></html>
